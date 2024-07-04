@@ -147,6 +147,96 @@ class BTree:
                     self.fix_child(x, i)
                 self.delete_process(x.child[i], k)
 
+    
+    ## Helper methods for deletion
+    def get_predecessor(self, x):
+        """
+        Start from the given node x. 
+        Keep moving to the rightmost child until reaching a leaf node. 
+        Once at a leaf, return the last key in that leaf, which is the predecessor.
+        """
+        while not x.leaf:
+            x = x.child[-1]
+        return x.keys[-1]
+    
+
+    def get_successor(self, x):
+        """
+        Start from the given node x. 
+        Keep moving to the leftmost child until reaching a leaf node. 
+        Once at a leaf, return the first key in that leaf, which is the successor.
+        """
+        while not x.leaf:
+            x = x.child[0]
+        return x.keys[0]
+    
+
+    def merge_nodes(self, x, i, y, z):
+        """
+        Move the key at index i from the parent x into y.
+        Append all keys from z to y.
+        If the nodes aren't leaves, move all child pointers from z to y.
+        Remove the key at index i from the parent x.
+        Remove the child pointer to z from the parent x.
+        If the parent x becomes empty after this operation, it means x was the root. In this case, y becomes the new root.
+        """
+        y.keys.append(x.keys[i])
+        y.keys.extend(z.keys)
+        y.child.extend(z.child)
+        x.keys.pop(i)
+        x.child.pop(i + 1)
+
+        if len(x.keys) == 0:  
+            self.root = y
+
+    
+    def fix_child(self, x, i):
+        """
+        If the left sibling has enough keys, borrow from the left.
+        If the right sibling has enough keys, borrow from the right.
+        If neither sibling has enough keys, merge the child with one of its siblings.
+        """
+        if i > 0 and len(x.child[i - 1].keys) >= self.t:
+            self.borrow_from_left(x, i)
+        elif i < len(x.child) - 1 and len(x.child[i + 1].keys) >= self.t:
+            self.borrow_from_right(x, i)
+        else:
+            if i > 0:
+                self.merge_nodes(x, i - 1, x.child[i - 1], x.child[i])
+                i -= 1
+            else:
+                self.merge_nodes(x, i, x.child[i], x.child[i + 1])
+
+    
+    def borrow_from_left(self, x, i):
+        """
+        Move the parent's key at index i-1 down to the child.
+        It then move the rightmost key from the left sibling up to the parent.
+        If the nodes aren't leaves, move the rightmost child pointer from the left sibling to the child.
+        """
+        child = x.child[i]
+        sibling = x.child[i - 1]
+
+        child.keys.insert(0, x.keys[i - 1])
+        x.keys[i - 1] = sibling.keys.pop()
+        if not child.leaf:
+            child.child.insert(0, sibling.child.pop())
+    
+
+    def borrow_from_right(self, x, i):
+        """
+        Move the parent's key at index i down to the child.
+        Move the leftmost key from the right sibling up to the parent.
+        If the nodes aren't leaves, move the leftmost child pointer from the right sibling to the child.
+        """
+        child = x.child[i]
+        sibling = x.child[i + 1]
+
+        child.keys.append(x.keys[i])
+        x.keys[i] = sibling.keys.pop(0)
+        if not child.leaf:
+            child.child.append(sibling.child.pop(0))
+
 
     ## Testing till now
     def display_tree(self):
@@ -168,6 +258,32 @@ def test_btree():
     for key in keys:
         print(f"\nInserting {key}:")
         b_tree.insert(key)
+        b_tree.display_tree()
+
+    # Test deletion
+    delete_keys = [6, 12, 30, 7]
+    for key in delete_keys:
+        print(f"\nDeleting {key}:")
+        b_tree.delete(key)
+        b_tree.display_tree()
+
+    # Test deleting a non-existent key
+    print("\nTrying to delete non-existent key 100:")
+    b_tree.delete(100)
+    b_tree.display_tree()
+
+    # Insert more keys to test complex scenarios
+    insert_more = [1, 2, 3, 4, 40, 50, 60]
+    for key in insert_more:
+        print(f"\nInserting {key}:")
+        b_tree.insert(key)
+        b_tree.display_tree()
+
+    # Delete more keys to test complex scenarios
+    delete_more = [4, 20, 50]
+    for key in delete_more:
+        print(f"\nDeleting {key}:")
+        b_tree.delete(key)
         b_tree.display_tree()
 
 # Run the test
