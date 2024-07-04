@@ -95,3 +95,9 @@ Feel free to submit issues, fork the repository, and send pull requests.
 ### License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/itsknk/btree/blob/master/LICENSE) file for details.
+
+### Motivation
+Got to complete this as part of homework for the Database Internals Reading Group.
+
+### To do
+Write about B-Trees, and the implementation in a lengthy, detailed post.
