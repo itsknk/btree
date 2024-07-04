@@ -1,16 +1,16 @@
 ## B-tree
 An implementation of B-Tree in python. A B Tree is a balanced tree data structure commonly used in databases and file systems to maintain sorted data and allow efficient insertion, deletion, and search operations.
 
-## Features
+### Features
 
 - **Insertion**: Add keys to the B-Tree, ensuring the tree remains balanced.
 - **Deletion**: Remove keys from the B-Tree, maintaining the tree's properties.
 - **Search**: Find keys within the B-Tree efficiently.
 - **Display**: Visualize the structure of the B-Tree.
 
-## Classes and Methods
+### Classes and Methods
 
-### `BTreeNode`
+#### `BTreeNode`
 
 Represents a node in the B-Tree.
 
@@ -19,7 +19,7 @@ Represents a node in the B-Tree.
   - `child`: List of child nodes.
   - `leaf`: Boolean flag indicating if the node is a leaf.
 
-### `BTree`
+#### `BTree`
 
 Represents the B-Tree itself.
 
@@ -42,7 +42,7 @@ Represents the B-Tree itself.
   - `search(k, x=None)`: Search for a key `k` starting from node `x`.
   - `display_tree()`: Display the structure of the B-Tree.
 
-## Usage
+### Usage
 
 1. **Clone the repository**:
    ```sh
@@ -59,7 +59,7 @@ Represents the B-Tree itself.
 3. **Example Output**:
    The output will display the B-Tree structure after each operation, helping you understand the changes in the tree.
 
-## Example
+### Example
 
 ```python
 # Create a B-Tree with minimum degree 3
@@ -88,6 +88,10 @@ for key in delete_keys:
     b_tree.display_tree()
 ```
 
-## Contributing
+### Contributing
 
 Feel free to submit issues, fork the repository, and send pull requests.
+
+### License
+
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/itsknk/btree/blob/master/LICENSE) file for details.
