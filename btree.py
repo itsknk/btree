@@ -95,6 +95,59 @@ class BTree:
             z.child = y.child[t:(2 * t)]
             y.child = y.child[0:t-1]
 
+
+    def delete(self, k):
+        """
+        Initiates the deletion process by calling the delete_process method on the root node.
+        """
+        self.delete_process(self.root, k)
+
+    
+    def delete_process(self, x, k):
+        """
+        - The initial loop finds the position i where the key k should be in the current node x. 
+            It stops when it finds a key greater than or equal to k, or when it reaches the end of the keys list.
+        - Check if the key k is actually present in the current node.
+        - If the node is a leaf, we can simply remove the key from the list.
+        - For an internal node, we identify the two children surrounding the key to be deleted: y(left child) and z(right child).
+        - If the let child has enough keys(at least t), we replace the key to be deleted with its 
+           predecessor(the largest key in the left subtree) from the left subtree.
+        - Similarly, if the right child has enough keys, we use the successor(the smallest key in the right subtree) instead.
+        - If both the children have the minimum number of keys, we merge them and then recursively delete the key from the merged node.
+        - If the key is not found and we're at a leaf, it means the key is not in the tree.
+        - If we're not at a leaf, we need to continue the search in the appropriate child. Before doing so, we ensure that the child has at least
+           t keys (calling fix_child if necessary), then recursively call delete_process on that child.
+        """
+        i = 0
+        while i < len(x.keys) and k > x.keys[i]:
+            i += 1
+
+        if i < len(x.keys) and k == x.keys[i]:
+            if x.leaf:
+                x.keys.pop(i)
+            else:
+                y = x.child[i]
+                z = x.child[i + 1]
+                if len(y.keys) >= self.t:
+                    predecessor = self.get_predecessor(y)
+                    x.keys[i] = predecessor
+                    self.delete_process(y, predecessor)
+                elif len(z.keys) >= self.t:
+                    successor = self.get_successor(z)
+                    x.keys[i] = successor
+                    self.delete_process(z, successor)
+                else:
+                    self.merge_nodes(x, i, y, z)
+                    self.delete_process(y, k)
+        else:
+            if x.leaf:
+                print(f"Key {k} does not exist")
+            else:
+                if len(x.child[i].keys) < self.t:
+                    self.fix_child(x, i)
+                self.delete_process(x.child[i], k)
+
+
     ## Testing till now
     def display_tree(self):
         def display_node(node, level, prefix):
