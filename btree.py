@@ -237,6 +237,34 @@ class BTree:
         if not child.leaf:
             child.child.append(sibling.child.pop(0))
 
+    
+    def search(self, k, x=None):
+        """
+        - The function takes two parameters:
+            k: The key we're searching for
+            x: The node to start the search from (optional, defaults to None)
+        - If x is None (i.e., not provided), we start the search from the root of the tree.
+        - If x is actually a B-tree node. If not, we restart the search from the root (last line of the function).
+        - The loop finds the correct position for k in the current node's keys.
+        - If we found the key, we return the current node and the index of the key.
+        - If we're at a leaf node and haven't found the key, it doesn't exist in the tree, so we return None.
+        - If we're not at a leaf, we recursively search in the appropriate child node.
+        - The last else clause handles the case where x isn't a BTreeNode (e.g., if it's None), restarting the search from the root.
+        """
+        x = x or self.root
+        if isinstance(x, BTreeNode):
+            i = 0
+            while i < len(x.keys) and k > x.keys[i]:
+                i += 1
+            if i < len(x.keys) and k == x.keys[i]:
+                return x, i
+            elif x.leaf:
+                return None
+            else:
+                return self.search(k, x.child[i])
+        else:
+            return self.search(k, self.root)
+
 
     ## Testing till now
     def display_tree(self):
@@ -259,6 +287,16 @@ def test_btree():
         print(f"\nInserting {key}:")
         b_tree.insert(key)
         b_tree.display_tree()
+
+    # Test searching
+    search_keys = [6, 12, 30, 100]
+    for key in search_keys:
+        result = b_tree.search(key)
+        if result:
+            node, index = result
+            print(f"\nKey {key} found in node {node.keys} at index {index}")
+        else:
+            print(f"\nKey {key} not found in the tree")
 
     # Test deletion
     delete_keys = [6, 12, 30, 7]
@@ -285,6 +323,17 @@ def test_btree():
         print(f"\nDeleting {key}:")
         b_tree.delete(key)
         b_tree.display_tree()
+
+    # Test searching after modifications
+    search_keys = [5, 40, 100]
+    for key in search_keys:
+        result = b_tree.search(key)
+        if result:
+            node, index = result
+            print(f"\nKey {key} found in node {node.keys} at index {index}")
+        else:
+            print(f"\nKey {key} not found in the tree")
+
 
 # Run the test
 test_btree()
